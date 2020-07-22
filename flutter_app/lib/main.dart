@@ -1,6 +1,76 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/dartstudy/state_text.dart';
+import 'package:flutter_app/ui/page/page_article.dart';
 
-void main() => runApp(MyApp());
+void main() => runApp(ArticleApp());
+
+//Widget的功能是描述一个UI元素的配置数据；
+//StatelessWidget/StatefulWidget 无状态/有状态；
+class MyApp2 extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    //
+//    return new Text('hello world',
+//      textDirection: TextDirection.ltr);
+    return MaterialApp(
+      title: 'hello world',
+      home: Scaffold(
+          appBar: AppBar(title: Text('第一个futter界面')),
+          body: Center(child: Text("我真帅", textAlign: TextAlign.center)))
+    );
+  }
+}
+
+//StatefulWidget 返回一个state
+class MyApp3 extends StatefulWidget {
+  @override
+  _MyApp3State createState() => _MyApp3State();
+}
+
+
+class _MyApp3State extends State<MyApp3> {
+
+  String txt;
+  bool isShowChild = true;
+
+  @override
+  void initState() {
+    super.initState();
+    txt = "你好，之华";
+  }
+
+  @override
+  void didUpdateWidget(MyApp3 oldWidget) {
+    print("parent, didUpdateWidget");
+    super.didUpdateWidget(oldWidget);
+
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    print("parent，build");
+    return MaterialApp(
+      title: 'widget演示',
+      theme: ThemeData(),
+      home: Scaffold(
+        appBar: AppBar(title: Text('你好')),
+        body: Center(
+          child: RaisedButton(
+                 onPressed: (){
+                   txt = "你好，我是之华";
+                   setState(() {
+                     print("wangs setState");
+                     isShowChild = !isShowChild;
+                   });
+                 },
+//                 child: isShowChild ? StateText.txt(txt) : Text('点我改变状态, $txt')))
+                 child: StateText.txt(txt)))
+      ),
+    );
+  }
+}
+
+
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.

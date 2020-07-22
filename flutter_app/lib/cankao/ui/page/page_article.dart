@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:banner_view/banner_view.dart';
-import 'package:wanandroid/http/api.dart';
-import 'package:wanandroid/ui/widget/article_item.dart';
-
-
+import 'package:flutter_app/cankao/http/api.dart';
+import 'package:flutter_app/cankao/ui/page/page_webview.dart';
+import 'package:flutter_app/cankao/ui/widget/article_item.dart';
 
 class ArticlePage extends StatefulWidget {
   @override
@@ -15,7 +14,7 @@ class _ArticlePageState extends State<ArticlePage> {
   ScrollController _controller = new ScrollController();
 
   ///控制正在加载的显示
-  bool _isHide = true;
+  bool _isLoading = true;
 
   ///请求到的文章数据
   List articles = [];
@@ -24,11 +23,10 @@ class _ArticlePageState extends State<ArticlePage> {
   List banners = [];
 
   ///总文章数有多少
-  var totalCount = 0;
+  var listTotalSize = 0;
 
   ///分页加载，当前页码
   var curPage = 0;
-
 
   @override
   void initState() {
@@ -41,15 +39,11 @@ class _ArticlePageState extends State<ArticlePage> {
       var pixels = _controller.position.pixels;
 
       ///当前滑动位置到达底部，同时还有更多数据
-      if (maxScroll == pixels && curPage < totalCount) {
+      if (maxScroll == pixels && articles.length < listTotalSize) {
         ///加载更多
         _getArticlelist();
       }
     });
-
-
-    /// 因为这一个方法就是去请求文章列表与banner图，下拉刷新需要重新请求
-    /// 然而初始化数据也是请求相同的数据，所以在initState初始化数据的时候手动请求一次！
     _pullToRefresh();
   }
 
@@ -67,7 +61,7 @@ class _ArticlePageState extends State<ArticlePage> {
       var datas = map['datas'];
 
       ///文章总数
-      totalCount = map["pageCount"];
+      listTotalSize = map["total"];
 
       if (curPage == 0) {
         articles.clear();
@@ -96,36 +90,30 @@ class _ArticlePageState extends State<ArticlePage> {
   ///下拉刷新
   Future<void> _pullToRefresh() async {
     curPage = 0;
-    ///组合两个异步任务，创建一个都完成后的新的Future
     Iterable<Future> futures = [_getArticlelist(), _getBanner()];
     await Future.wait(futures);
-    _isHide = false;
+    _isLoading = false;
     setState(() {});
     return null;
   }
 
-  ///布局
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: <Widget>[
         ///正在加载
         Offstage(
-          offstage: !_isHide, //是否隐藏
+          offstage: !_isLoading, //是否隐藏
           child: new Center(child: CircularProgressIndicator()),
         ),
 
         ///内容
         Offstage(
-          offstage: _isHide,
-          ///SwipeRefresh 下拉刷新组件
+          offstage: _isLoading,
           child: new RefreshIndicator(
               child: ListView.builder(
-                //条目数 +1代表了banner的条目
                 itemCount: articles.length + 1,
-                //adapter条目item 视图生成方法
                 itemBuilder: (context, i) => _buildItem(i),
-
                 controller: _controller,
               ),
               onRefresh: _pullToRefresh),
@@ -135,12 +123,9 @@ class _ArticlePageState extends State<ArticlePage> {
   }
 
   Widget _buildItem(int i) {
-
     if (i == 0) {
-      //Container ：容器
       return new Container(
-        //MediaQuery.of(context).size.height: 全屏幕高度
-        height: MediaQuery.of(context).size.height*0.3,
+        height: 180.0,
         child: _bannerView(),
       );
     }
@@ -149,18 +134,24 @@ class _ArticlePageState extends State<ArticlePage> {
   }
 
   Widget _bannerView() {
-    //map:转换 ,将List中的每一个条目执行 map方法参数接收的这个方法,这个方法返回T类型，
-    //map方法最终会返回一个  Iterable<T>
-    List<Widget> list = banners.map((item) {
-      return Image.network(item['imagePath'], fit: BoxFit.cover); //fit 图片充满容器
+    var list = banners.map((item) {
+      return InkWell(
+        child: Image.network(item['imagePath'], fit: BoxFit.cover), //fit 图片充满容器
+        ///点击事件
+        onTap: () {
+          ///跳转页面
+          Navigator.of(context).push(new MaterialPageRoute(builder: (context) {
+//            return WebViewPage(item);
+          return null;
+          }));
+        },
+      );
     }).toList();
     return list.isNotEmpty
         ? BannerView(
             list,
-            //控制轮播时间
             intervalDuration: const Duration(seconds: 3),
           )
         : null;
   }
-
 }

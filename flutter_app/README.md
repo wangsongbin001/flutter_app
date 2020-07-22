@@ -16,3 +16,10 @@ For help getting started with Flutter, view our
 samples, guidance on mobile development, and a full API reference.
 
 flutter 
+//dart常用类库；https://pub.dartlang.org/
+
+//导入新项目经常遇到问题
+1，重新指定自己的dartsdk路径；
+2，file encoding utf-8;
+3, environment: sdk: ">=2.1.0 <3.0.0"
+ 
