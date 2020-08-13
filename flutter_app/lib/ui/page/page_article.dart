@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/ui/widget/item_article.dart';
 import 'package:flutter_app/net/api.dart';
 import 'package:flutter_app/ui/widget/item_banner.dart';
+import 'package:flutter_app/ui/widget/main_drawer.dart';
 
 class ArticleApp extends StatelessWidget {
   @override
@@ -11,6 +12,7 @@ class ArticleApp extends StatelessWidget {
         home: Scaffold(
             appBar: AppBar(
                 title: Text("文章", style: const TextStyle(color: Colors.white))),
+            drawer: MainDrawer(),//侧滑菜单
             body: new ArticlePage()));
   }
 }

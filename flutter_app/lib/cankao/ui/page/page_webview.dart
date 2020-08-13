@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
+
 
 class WebViewPage extends StatefulWidget {
   final data;
@@ -17,6 +19,7 @@ class _WebViewPageState extends State<WebViewPage> {
   @override
   void initState() {
     super.initState();
+
     flutterWebViewPlugin = new FlutterWebviewPlugin();
     flutterWebViewPlugin.onStateChanged.listen((state) {
       if (state.type == WebViewState.finishLoad) {
@@ -46,7 +49,9 @@ class _WebViewPageState extends State<WebViewPage> {
           title: Text(widget.data['title']),
           ///appbar下边摆放一个进度条
           bottom: PreferredSize(
+              //提供一个希望的 大小
               preferredSize: const Size.fromHeight(1.0),
+              //进度条
               child: const LinearProgressIndicator()),
           ///透明度
           bottomOpacity: isLoad ? 1.0 : 0.0,
